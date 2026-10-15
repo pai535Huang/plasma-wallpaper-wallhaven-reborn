@@ -57,6 +57,17 @@ TestCase {
         configLoader.item.cfg_SyncGroupId = "shared-group";
     }
 
+    function test_autoRefreshSettingAndManualButton() {
+        const page = configLoader.item;
+        page.cfg_AutoRefresh = false;
+        const oldSignal = page.cfg_RefetchSignal;
+        page.refreshImage();
+        compare(page.cfg_AutoRefresh, false);
+        compare(page.cfg_RefetchSignal, !oldSignal);
+        page.cfg_AutoRefresh = true;
+        compare(page.cfg_AutoRefresh, true);
+    }
+
     function test_individualChangesDetachScreenFromSharedGroup() {
         setSharedGroup();
 

@@ -12,14 +12,14 @@
       }
     ],
     "Category": "",
-    "Description": "Wallpaper plugin to fetch wallpapers from wallhaven.cc",
+    "Description": "Wallhaven wallpapers with an explicit automatic refresh switch",
     "Icon": "preferences-desktop-wallpaper",
-    "Id": "com.plasma.wallpaper.wallhaven",
+    "Id": "io.github.pai535Huang.wallhavenmanual",
     "License": "GPLv2+",
-    "Version": "2.1.0",
-    "Name": "Wallhaven",
-    "Website": "https://github.com/Blacksuan19/plasma-wallpaper-wallhaven-reborn",
-    "BugReportUrl": "https://github.com/Blacksuan19/plasma-wallpaper-wallhaven-reborn/issues"
+    "Version": "2.1.0-manual.1",
+    "Name": "Wallhaven Manual",
+    "Website": "https://github.com/pai535Huang/plasma-wallpaper-wallhaven-reborn",
+    "BugReportUrl": "https://github.com/pai535Huang/plasma-wallpaper-wallhaven-reborn/issues"
   },
   "Keywords": [
     "wallhaven",

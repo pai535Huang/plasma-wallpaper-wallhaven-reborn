@@ -43,6 +43,7 @@ ColumnLayout {
     property alias cfg_APIKey: apiKeyInput.text
     property alias cfg_Query: queryInput.text
     property int cfg_FillMode
+    property alias cfg_AutoRefresh: autoRefreshCheckBox.checked
     property int cfg_WallpaperDelay: 60
     property int cfg_WallpaperLimit: 100
     property bool cfg_SynchronizeScreens: false
@@ -74,7 +75,7 @@ ColumnLayout {
     property bool cfg_Ratio1610
     property bool cfg_RatioCustom
     property string cfg_RatioCustomValue
-    readonly property string savedWallpapersDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/wallhaven-saved"
+    readonly property string savedWallpapersDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/wallhaven-manual/saved"
     readonly property string currentThumbnailSource: (wallpaperConfiguration && wallpaperConfiguration.currentWallpaperThumbnail) ? wallpaperConfiguration.currentWallpaperThumbnail : cfg_currentWallpaperThumbnail
     property bool systemSettingsContext: false
 
@@ -713,6 +714,17 @@ ColumnLayout {
                 Kirigami.FormData.label: i18n("Timer Settings")
             }
 
+            CheckBox {
+                id: autoRefreshCheckBox
+                text: i18n("Automatically refresh wallpaper")
+            }
+
+            Label {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: i18n("When disabled, keep the current wallpaper until you refresh it manually. Startup and theme changes do not select a new wallpaper. Screen synchronization is suspended.")
+            }
+
             // Timer settings
             RowLayout {
                 Kirigami.FormData.label: i18n("Change every:")
@@ -720,12 +732,13 @@ ColumnLayout {
 
                 SpinBox {
                     id: delaySpinBox
+                    enabled: autoRefreshCheckBox.checked
 
                     value: cfg_WallpaperDelay
                     onValueChanged: cfg_WallpaperDelay = value
                     stepSize: 1
                     from: 1
-                    to: 50000
+                    to: 35791
                     editable: true
                     textFromValue: function(value, locale) {
                         return " " + value + " minutes";

@@ -1,3 +1,42 @@
+# Wallhaven Manual (personal fork)
+
+Based on [Wallhaven Wallpaper Reborn](https://github.com/Blacksuan19/plasma-wallpaper-wallhaven-reborn).
+
+This fork adds **Automatically refresh wallpaper** under Timer Settings. It defaults
+on. Turn it off to stop timed, startup and theme-triggered selection. The desktop
+context menu and settings refresh button still work. Changing search filters in
+manual mode takes effect on the next manual refresh. A request already in flight
+is allowed to finish, including retries.
+
+On startup, the plugin restores its local cache. If missing, it tries the previous
+image URL and then a placeholder; manual mode never searches for a replacement.
+Screen synchronization is suspended for a screen in manual mode so another screen
+cannot replace its wallpaper automatically. Enabling automatic refresh resumes
+the interval; enabling configured screen synchronization may join its selection.
+
+Plugin ID: `io.github.pai535Huang.wallhavenmanual`; display name: **Wallhaven Manual**.
+It installs alongside upstream and has separate cache, saved files and sync data.
+Settings and saved collections are not automatically migrated from upstream.
+
+```bash
+kpackagetool6 --type Plasma/Wallpaper --install package/
+# Subsequent updates:
+kpackagetool6 --type Plasma/Wallpaper --upgrade package/
+```
+
+After installing, log out and back in, then select Wallhaven Manual in the desktop
+wallpaper settings. Configure the search/category filters and switch off automatic
+refresh if desired. No desktop settings are changed by cloning this repository.
+
+Validation:
+
+```bash
+QT_QPA_PLATFORM=offscreen qmltestrunner -input tests/qml
+node --test tests/auto-refresh.test.cjs
+```
+
+## Upstream documentation
+
 # Wallhaven Wallpaper Reborn
 
 Port of wallhaven wallpaper plugin by

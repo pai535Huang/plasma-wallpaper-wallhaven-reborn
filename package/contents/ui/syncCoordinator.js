@@ -41,7 +41,7 @@ const databaseVersion = "";
 const requestTimeoutMs = 120000;
 
 /** @type {string} */
-var databaseName = "wallhaven-wallpaper-sync";
+var databaseName = "wallhaven-manual-sync";
 
 /** @type {*} */
 var database = null;

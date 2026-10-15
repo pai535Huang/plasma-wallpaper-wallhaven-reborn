@@ -43,12 +43,14 @@ WallpaperItem {
     property var currentWallpaperColors: []
     readonly property bool systemDarkMode: Kirigami.Theme.textColor.hsvValue > Kirigami.Theme.backgroundColor.hsvValue
     readonly property bool followSystemTheme: main.configuration.FollowSystemTheme
-    readonly property bool synchronizeScreens: main.configuration.SynchronizeScreens === true
+    readonly property bool autoRefresh: main.configuration.AutoRefresh
+    // A screen in manual mode must not accept another screen's scheduled selection.
+    readonly property bool synchronizeScreens: autoRefresh && main.configuration.SynchronizeScreens === true
     readonly property string configuredSyncGroupId: main.configuration.SyncGroupId || ""
-    readonly property string cacheDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/cache"
+    readonly property string cacheDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/wallhaven-manual/cache"
     readonly property string cacheFilePath: cacheDir + "/current-wallpaper.jpg"
     readonly property url cacheFileUrl: "file://" + cacheFilePath
-    readonly property string savedWallpapersDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/wallhaven-saved"
+    readonly property string savedWallpapersDir: Utils.normalizePath(Platform.StandardPaths.writableLocation(Platform.StandardPaths.AppDataLocation)) + "/wallhaven-manual/saved"
     property var pendingDownloads: ({
     }) // Track pending downloads: {url: {thumbnail, entry}}
     property var shownSavedWallpapers: main.configuration.ShownSavedWallpapers || []
@@ -66,7 +68,15 @@ WallpaperItem {
     }
 
     function scheduleNextRefresh() {
-        refreshTimer.restart();
+        refreshTimer.stop();
+        if (componentReady && autoRefresh)
+            refreshTimer.start();
+    }
+
+    function requestAutomaticRefresh() {
+        // Recheck here as queued calls can run after the switch has been disabled.
+        if (componentReady && autoRefresh)
+            refreshImage();
     }
 
     function unregisterFromSyncGroup() {
@@ -112,7 +122,7 @@ WallpaperItem {
         if (!synchronizeScreens) {
             scheduleNextRefresh();
         } else if (registration && !registration.hasSelection) {
-            Qt.callLater(refreshImage);
+            Qt.callLater(requestAutomaticRefresh);
         } else {
             scheduleNextRefresh();
         }
@@ -471,7 +481,7 @@ WallpaperItem {
         loadStartupCache();
         const registration = registerWithSyncGroup();
         if (!synchronizeScreens || (registration && !registration.hasSelection))
-            Qt.callLater(refreshImage);
+            Qt.callLater(requestAutomaticRefresh);
         else
             scheduleNextRefresh();
     }
@@ -481,7 +491,14 @@ WallpaperItem {
     }
     onCurrentUrlChanged: loadImage()
     onFillModeChanged: loadImage()
-    onRefreshSignalChanged: refreshImage()
+    onRefreshSignalChanged: {
+        if (componentReady)
+            refreshImage();
+    }
+    onAutoRefreshChanged: {
+        if (componentReady)
+            scheduleNextRefresh();
+    }
     onSynchronizeScreensChanged: Qt.callLater(handleSyncConfigurationChanged)
     onConfiguredSyncGroupIdChanged: {
         if (synchronizeScreens)
@@ -494,7 +511,7 @@ WallpaperItem {
         }
     }
     onSystemDarkModeChanged: {
-        if (followSystemTheme) {
+        if (componentReady && autoRefresh && followSystemTheme) {
             log("System theme changed");
             if (main.configuration.UseSavedWallpapers) {
                 // Reset shown list so the dark/light subset is re-cycled from scratch
@@ -505,7 +522,7 @@ WallpaperItem {
             refreshImage();
         }
     }
-    onFollowSystemThemeChanged: refreshImage()
+    onFollowSystemThemeChanged: requestAutomaticRefresh()
     contextualActions: [
         PlasmaCore.Action {
             text: i18n("Open Wallpaper Page")
@@ -555,7 +572,7 @@ WallpaperItem {
         triggeredOnStart: false
         onTriggered: {
             log("refreshTimer triggered");
-            Qt.callLater(refreshImage);
+            Qt.callLater(requestAutomaticRefresh);
         }
     }
 
@@ -607,6 +624,11 @@ WallpaperItem {
                             imageItem.destroy();
                         }
                         isLoading = false;
+                        if (source.toString() === cacheFileUrl.toString()) {
+                            main.currentUrl = lastValidImagePath || "blackscreen.jpg";
+                        } else if (root.depth === 0 && source.toString() !== "blackscreen.jpg") {
+                            main.currentUrl = "blackscreen.jpg";
+                        }
                     } else if (status === Image.Ready) {
                         log("Image loaded successfully");
                         if (Utils.isHttpUrl(source)) {

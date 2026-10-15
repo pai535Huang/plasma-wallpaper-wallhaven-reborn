@@ -22,7 +22,7 @@ for _ in $(seq 1 100); do
     sleep 0.1
 done
 
-plugin_id="com.plasma.wallpaper.wallhaven"
+plugin_id="io.github.pai535Huang.wallhavenmanual"
 sync_group="virtual-plasma-two-output-test"
 first_image="$repo_root/screenshot.png"
 second_image="$repo_root/package/contents/ui/blackscreen.jpg"

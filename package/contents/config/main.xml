@@ -60,6 +60,10 @@
       <label>Color to filter the search results</label>
       <default></default>
     </entry>
+    <entry name="AutoRefresh" type="bool">
+      <label>Automatically refresh wallpaper</label>
+      <default>true</default>
+    </entry>
     <entry name="WallpaperDelay" type="int">
       <label>How much time in minutes between wallpaper change.</label>
       <default>60</default>
