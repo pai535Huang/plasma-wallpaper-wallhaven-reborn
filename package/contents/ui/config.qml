@@ -716,13 +716,12 @@ ColumnLayout {
 
             CheckBox {
                 id: autoRefreshCheckBox
-                text: i18n("Automatically refresh wallpaper")
-            }
 
-            Label {
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                text: i18n("When disabled, keep the current wallpaper until you refresh it manually. Startup and theme changes do not select a new wallpaper. Screen synchronization is suspended.")
+                Kirigami.FormData.label: i18n("Automatic refresh:")
+                text: i18n("Enabled")
+                ToolTip.text: i18n("When disabled, only manual refresh changes the wallpaper. Screen synchronization is paused.")
+                ToolTip.visible: hovered
+                ToolTip.delay: Kirigami.Units.toolTipDelay
             }
 
             // Timer settings
